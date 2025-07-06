@@ -22,7 +22,8 @@ const CreatePage = () => {
     setLoading(true);
 
     try{
-      await axios.post("http://localhost:5001/api/notes",{
+      const BASE_URL = import.meta.env.MODE === "development"? "http://localhost:5001/api": "/api";
+      await axios.post(`${BASE_URL}/notes`, {
         title,
         content
       });
