@@ -7,21 +7,33 @@ import rateLimiter from "./middleware/rateLimiter.js";
 dotenv.config();
 import cors from "cors"
 
+import path from "path"
+
 // console.log(process.env.MONGO_URI);//just for checking
 
 const PORT = process.env.PORT || 5001;
 const app = express();
-
+const __dirname = path.resolve()
 
 //middleware
-app.use(cors({
-    origin:"http://localhost:5173",
-}));
+if(process.env.NODE_ENV !== "production"){
+    app.use(cors({
+        origin:"http://localhost:5173",
+    }));
+}
 
 app.use(express.json());
 app.use(rateLimiter);
 
 app.use("/api/notes",notesRoute);
+
+if(process.env.NODE_ENV === "production"){
+    app.use(express.static(path.join(__dirname,"../frontend/dist")));
+
+    app.get("*",(req,res) =>{
+        res.sendFile(path.join(__dirname,"../frontend","dist","index.html"));
+    })
+}
 
 // app.use("api/products",proudctRoutes);
 // app.use("/api/posts",postsRoutes)
